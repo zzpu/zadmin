@@ -1,0 +1,552 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "RBAC scaffolding based on GIN + GORM/MONGO + CASBIN + WIRE.",
+        "title": "zback",
+        "contact": {
+            "name": "LyricTian",
+            "email": "tiannianshou@gmail.com"
+        },
+        "license": {},
+        "version": "6.3.1"
+    },
+    "basePath": "/",
+    "paths": {},
+    "definitions": {
+        "schema.Demo": {
+            "type": "object",
+            "required": [
+                "code",
+                "name",
+                "status"
+            ],
+            "properties": {
+                "code": {
+                    "description": "编号",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "creator": {
+                    "description": "创建者",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态(1:启用 2:停用)",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.ErrorItem": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "错误码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "错误信息",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.ErrorResult": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "description": "错误项",
+                    "type": "object",
+                    "$ref": "#/definitions/schema.ErrorItem"
+                }
+            }
+        },
+        "schema.IDResult": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "schema.LoginCaptcha": {
+            "type": "object",
+            "properties": {
+                "captcha_id": {
+                    "description": "验证码ID",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.LoginParam": {
+            "type": "object",
+            "required": [
+                "captcha_code",
+                "captcha_id",
+                "password",
+                "user_name"
+            ],
+            "properties": {
+                "captcha_code": {
+                    "description": "验证码",
+                    "type": "string"
+                },
+                "captcha_id": {
+                    "description": "验证码ID",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码(md5加密)",
+                    "type": "string"
+                },
+                "user_name": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.LoginTokenInfo": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "description": "访问令牌",
+                    "type": "string"
+                },
+                "expires_at": {
+                    "description": "令牌到期时间戳",
+                    "type": "integer"
+                },
+                "token_type": {
+                    "description": "令牌类型",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.Menu": {
+            "type": "object",
+            "required": [
+                "name",
+                "show_status",
+                "status",
+                "title"
+            ],
+            "properties": {
+                "component": {
+                    "description": "组件",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "creator": {
+                    "description": "创建者",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "菜单图标",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "路由层级",
+                    "type": "integer"
+                },
+                "memo": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "method": {
+                    "description": "按钮类型(其实是HTTP的方法,GET,POST,PUT,DELETE等)",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "菜单名称",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "父级ID",
+                    "type": "string"
+                },
+                "parent_path": {
+                    "description": "父级路径",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "访问路由",
+                    "type": "string"
+                },
+                "sequence": {
+                    "description": "排序值",
+                    "type": "integer"
+                },
+                "show_status": {
+                    "description": "显示状态(1:显示 2:隐藏)",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态(1:启用 2:禁用)",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单名称(显示)",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.MenuTree": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "子级树",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.MenuTree"
+                    }
+                },
+                "component": {
+                    "description": "组件",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "菜单图标",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "路由层级",
+                    "type": "integer"
+                },
+                "method": {
+                    "description": "按钮类型",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "菜单名称",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "父级ID",
+                    "type": "string"
+                },
+                "parent_path": {
+                    "description": "父级路径",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "访问路由",
+                    "type": "string"
+                },
+                "sequence": {
+                    "description": "排序值",
+                    "type": "integer"
+                },
+                "show_status": {
+                    "description": "显示状态(1:显示 2:隐藏)",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态(1:启用 2:禁用)",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "菜单名称（显示)",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.Role": {
+            "type": "object",
+            "required": [
+                "name",
+                "status"
+            ],
+            "properties": {
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "creator": {
+                    "description": "创建者",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "role_menus": {
+                    "description": "角色菜单列表",
+                    "type": "object",
+                    "$ref": "#/definitions/schema.RoleMenus"
+                },
+                "sequence": {
+                    "description": "排序值",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态(1:启用 2:禁用)",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.RoleMenu": {
+            "type": "object",
+            "required": [
+                "menu_id",
+                "role_id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "menu_id": {
+                    "description": "菜单ID",
+                    "type": "string"
+                },
+                "role_id": {
+                    "description": "角色ID",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.RoleMenus": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/schema.RoleMenu"
+            }
+        },
+        "schema.Roles": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/schema.Role"
+            }
+        },
+        "schema.StatusResult": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "状态(OK)",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.UpdatePasswordParam": {
+            "type": "object",
+            "required": [
+                "new_password",
+                "old_password"
+            ],
+            "properties": {
+                "new_password": {
+                    "description": "新密码(md5加密)",
+                    "type": "string"
+                },
+                "old_password": {
+                    "description": "旧密码(md5加密)",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.User": {
+            "type": "object",
+            "required": [
+                "real_name",
+                "user_name",
+                "user_roles"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "creator": {
+                    "description": "创建者",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "real_name": {
+                    "description": "真实姓名",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "用户状态(0:启用 1:停用)",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "用户状态(0:普通用户 1:管理员)",
+                    "type": "integer"
+                },
+                "user_name": {
+                    "description": "用户名",
+                    "type": "string"
+                },
+                "user_roles": {
+                    "description": "角色授权",
+                    "type": "object",
+                    "$ref": "#/definitions/schema.UserRoles"
+                }
+            }
+        },
+        "schema.UserLoginInfo": {
+            "type": "object",
+            "properties": {
+                "real_name": {
+                    "description": "真实姓名",
+                    "type": "string"
+                },
+                "roles": {
+                    "description": "角色列表",
+                    "type": "object",
+                    "$ref": "#/definitions/schema.Roles"
+                },
+                "user_id": {
+                    "description": "用户ID",
+                    "type": "string"
+                },
+                "user_name": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.UserRole": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "role_id": {
+                    "description": "角色ID",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "用户ID",
+                    "type": "string"
+                }
+            }
+        },
+        "schema.UserRoles": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/schema.UserRole"
+            }
+        },
+        "schema.UserShow": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "唯一标识",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "real_name": {
+                    "description": "真实姓名",
+                    "type": "string"
+                },
+                "roles": {
+                    "description": "授权角色列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.Role"
+                    }
+                },
+                "status": {
+                    "description": "用户状态(1:启用 2:停用)",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "用户状态(0:普通用户 1:管理员)",
+                    "type": "integer"
+                },
+                "user_name": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

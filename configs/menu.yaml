@@ -1,0 +1,145 @@
+---
+# 菜单配置初始化(服务启动时会进行数据检查，如果存在则不再初始化)
+- title: 首页
+  component: "Main"
+  level: 1
+  name: home
+  icon: home
+  path: "/home"
+  sequence: 10
+- title: 系统管理
+  component: "Main"
+  level: 1
+  name: setting
+  icon: ios-settings
+  sequence: 7
+  children:
+    - title: 菜单管理
+      component: "sys/menu-manage/menuManage"
+      level: 2
+      name: menu
+      icon: md-apps
+      path: "/system/menu"
+      sequence: 9
+      children:
+        - title: 新增
+          name: add
+          method: POST
+          icon: md-add-circle
+          level: 3
+          path: "/api/v1/menus"
+        - title: 编辑
+          name: edit
+          method: GET
+          level: 3
+          path: "/api/v1/menus/:id"
+        - title: 删除
+          name: del
+          method: DELETE
+          icon: md-trash
+          level: 3
+          path: "/api/v1/menus/:id"
+        - title: 查询
+          name: query
+          method: GET
+          icon: md-book
+          level: 3
+          path:  "/api/v1/menus"
+        - title: 禁用
+          name: disable
+          method: PATCH
+          icon: md-alert
+          level: 3
+          path: "/api/v1/menus/:id/disable"
+        - title: 启用
+          name: enable
+          method: PATCH
+          icon: md-unlock
+          level: 3
+          path: "/api/v1/menus/:id/enable"
+    - title: 角色管理
+      component: "sys/role-manage/roleManage"
+      level: 2
+      name: role
+      icon: md-contacts
+      path: "/system/role"
+      sequence: 8
+      children:
+        - title: 新增
+          name: add
+          method: POST
+          icon: md-add-circle
+          level: 3
+          path: "/api/v1/roles"
+        - title: 编辑
+          name: edit
+          method: GET
+          level: 3
+          path: "/api/v1/roles/:id"
+        - title: 删除
+          name: del
+          method: DELETE
+          icon: md-trash
+          level: 3
+          path: "/api/v1/roles/:id"
+        - title: 查询
+          name: query
+          method: GET
+          icon: md-book
+          level: 3
+          path:  "/api/v1/roles"
+        - title: 禁用
+          name: disable
+          method: PATCH
+          icon: md-alert
+          level: 3
+          path: "/api/v1/roles/:id/disable"
+        - title: 启用
+          name: enable
+          method: PATCH
+          icon: md-unlock
+          level: 3
+          path: "/api/v1/roles/:id/enable"
+    - title: 用户管理
+      component: "sys/user-manage/userManage"
+      level: 2
+      name: user
+      icon: md-person
+      path: "/system/user"
+      sequence: 7
+      children:
+        - title: 新增
+          name: add
+          method: POST
+          icon: md-add-circle
+          level: 3
+          path: "/api/v1/user"
+        - title: 编辑
+          name: edit
+          method: GET
+          level: 3
+          path: "/api/v1/user/:id"
+        - title: 删除
+          name: del
+          method: DELETE
+          icon: md-trash
+          level: 3
+          path: "/api/v1/user/:id"
+        - title: 查询
+          name: query
+          method: GET
+          icon: md-book
+          level: 3
+          path:  "/api/v1/user"
+        - title: 禁用
+          name: disable
+          method: PATCH
+          icon: md-alert
+          level: 3
+          path: "/api/v1/user/:id/disable"
+        - title: 启用
+          name: enable
+          method: PATCH
+          icon: md-unlock
+          level: 3
+          path: "/api/v1/user/:id/enable"
